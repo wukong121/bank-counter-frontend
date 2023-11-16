@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Col, DatePicker, Drawer, Form, Input, Row, Select, Space } from 'antd';
+import React, {useState} from 'react';
+import {PlusOutlined} from '@ant-design/icons';
+import {Button, Col, Drawer, Form, Input, Row, Select, Space, message} from 'antd';
 
-const { Option } = Select;
+const {Option} = Select;
+
+interface AccountType {
+  id: number;
+  balance: number;
+  currency: string;
+  state: string;
+  createdAt: string | undefined;
+  modifiedAt: string | undefined
+}
 
 const NewAccount: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [form] = Form.useForm();
+
+  const handleSubmit = () => {
+    form.submit();
+  };
 
   const showDrawer = () => {
     setOpen(true);
@@ -15,9 +29,46 @@ const NewAccount: React.FC = () => {
     setOpen(false);
   };
 
+  const onFinish = (values: AccountType) => {
+    // 将表单数据转换为发送到后端的格式
+    const requestData = {
+      id: values.id,
+      balance: values.balance,
+      currency: values.currency,
+      state: values.state,
+      createdAt: new Date().toISOString(), // 使用当前时间作为创建时间
+      modifiedAt: new Date().toISOString(), // 使用当前时间作为修改时间
+    };
+
+    // 发送 POST 请求到后端
+    fetch('http://localhost:8080/api/v1/accounts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Server error: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      message.success('Account created successfully');
+      console.log('Account created successfully:', data);
+      onClose();
+    })
+    .catch(error => {
+      message.error('Failed to create user')
+      console.error('Error creating account:', error);
+      onClose();
+    });
+  };
+
   return (
       <>
-        <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />}>
+        <Button type="primary" onClick={showDrawer} icon={<PlusOutlined/>}>
           New account
         </Button>
         <Drawer
@@ -33,103 +84,57 @@ const NewAccount: React.FC = () => {
             extra={
               <Space>
                 <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={onClose} type="primary">
+                <Button onClick={handleSubmit} type="primary" htmlType="submit">
                   Submit
                 </Button>
               </Space>
             }
         >
-          <Form layout="vertical" hideRequiredMark>
+          <Form layout="vertical" onFinish={onFinish} form={form}>
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
-                    name="name"
-                    label="Name"
-                    rules={[{ required: true, message: 'Please enter user name' }]}
+                    name="id"
+                    label="Id"
+                    rules={[{required: true, message: 'Please enter user id'}]}
                 >
-                  <Input placeholder="Please enter user name" />
+                  <Input placeholder="Please enter user id"/>
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
-                    name="url"
-                    label="Url"
-                    rules={[{ required: true, message: 'Please enter url' }]}
+                    name="balance"
+                    label="Balance"
+                    rules={[{required: true, message: 'Please enter Balance'}]}
                 >
-                  <Input
-                      style={{ width: '100%' }}
-                      addonBefore="http://"
-                      addonAfter=".com"
-                      placeholder="Please enter url"
-                  />
+                  <Input placeholder="Please enter balance"/>
                 </Form.Item>
               </Col>
             </Row>
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item
-                    name="owner"
-                    label="Owner"
-                    rules={[{ required: true, message: 'Please select an owner' }]}
+                    name="currency"
+                    label="Currency"
+                    rules={[{required: true, message: 'Please choose the currency type'}]}
                 >
-                  <Select placeholder="Please select an owner">
-                    <Option value="xiao">Xiaoxiao Fu</Option>
-                    <Option value="mao">Maomao Zhou</Option>
+                  <Select placeholder="Please choose the currency type">
+                    <Option value="USD">USD</Option>
+                    <Option value="CNY">CNY</Option>
                   </Select>
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
-                    name="type"
-                    label="Type"
-                    rules={[{ required: true, message: 'Please choose the type' }]}
+                    name="state"
+                    label="State"
+                    rules={[{required: true, message: 'Please choose the state'}]}
                 >
-                  <Select placeholder="Please choose the type">
-                    <Option value="private">Private</Option>
-                    <Option value="public">Public</Option>
+                  <Select placeholder="Please choose the state">
+                    <Option value="ACTIVE">ACTIVE</Option>
+                    <Option value="INACTIVE">INACTIVE</Option>
+                    <Option value="SET_FOR_DELETION">SET_FOR_DELETION</Option>
                   </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                    name="approver"
-                    label="Approver"
-                    rules={[{ required: true, message: 'Please choose the approver' }]}
-                >
-                  <Select placeholder="Please choose the approver">
-                    <Option value="jack">Jack Ma</Option>
-                    <Option value="tom">Tom Liu</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                    name="dateTime"
-                    label="DateTime"
-                    rules={[{ required: true, message: 'Please choose the dateTime' }]}
-                >
-                  <DatePicker.RangePicker
-                      style={{ width: '100%' }}
-                      getPopupContainer={(trigger) => trigger.parentElement!}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                    name="description"
-                    label="Description"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'please enter url description',
-                      },
-                    ]}
-                >
-                  <Input.TextArea rows={4} placeholder="please enter url description" />
                 </Form.Item>
               </Col>
             </Row>

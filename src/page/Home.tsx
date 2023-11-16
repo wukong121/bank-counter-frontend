@@ -5,8 +5,7 @@ import {
 } from '@ant-design/icons';
 import type {MenuProps} from 'antd';
 import {Breadcrumb, Button, Col, Layout, Menu, Row, Space, theme} from 'antd';
-import UserList from "../component/UserList";
-import NewAccount from "../component/NewAccount";
+import {Link, Outlet} from "react-router-dom";
 
 const {Header, Content, Footer, Sider} = Layout;
 
@@ -16,19 +15,20 @@ function getItem(
     label: React.ReactNode,
     key: React.Key,
     icon?: React.ReactNode,
+    to?: string,
     children?: MenuItem[],
 ): MenuItem {
   return {
     key,
     icon,
     children,
-    label,
+    label: to ? <Link to={to}>{label}</Link> : label,
   } as MenuItem;
 }
 
 const items: MenuItem[] = [
-  getItem('Accounts', '1', <UserOutlined/>),
-  getItem('Transfer', '2', <FileOutlined/>),
+  getItem('Accounts', '1', <UserOutlined/>, '/accounts'),
+  getItem('Transfer', '2', <FileOutlined/>, '/transfer'),
 ];
 
 const HomePage: React.FC = () => {
@@ -60,10 +60,7 @@ const HomePage: React.FC = () => {
               <Breadcrumb.Item>somebody</Breadcrumb.Item>
             </Breadcrumb>
             <div style={{padding: 24, minHeight: 360, background: colorBgContainer}}>
-              <UserList/>
-              <div style={{marginTop: '20px'}}>
-                <NewAccount/>
-              </div>
+              <Outlet />
             </div>
           </Content>
           <Footer style={{textAlign: 'center'}}>Ant Design ©2023 Created by Ant UED</Footer>

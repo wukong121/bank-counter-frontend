@@ -10,7 +10,7 @@ interface User {
   modifiedAt: string;
 }
 
-const UserList: React.FC = () => {
+const AccountTable: React.FC = () => {
   const [userData, setUserData] = useState<User[]>([]);
 
   useEffect(() => {
@@ -55,8 +55,8 @@ const UserList: React.FC = () => {
   ];
 
   return (
-      <Table dataSource={userData} columns={columns} />
+      <Table dataSource={userData} columns={columns}/>
   )
 };
 
-export default UserList;
+export default AccountTable;
