@@ -1,5 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {Table} from "antd";
+import StatusTag from "./StatusTag";
+import DeleteAccount from "./DeleteAccount";
+import {useSelector} from "react-redux";
+import {RootState} from "../store/intex";
 
 interface User {
   id: number;
@@ -12,14 +16,14 @@ interface User {
 
 const AccountTable: React.FC = () => {
   const [userData, setUserData] = useState<User[]>([]);
+  const refresh = useSelector((state: RootState) => state.refresh.value);
 
   useEffect(() => {
-    // Replace 'yourApiEndpoint' with the actual API endpoint
     fetch('http://localhost:8080/api/v1/accounts')
     .then(response => response.json())
     .then(data => setUserData(data))
     .catch(error => console.error('Error fetching user data:', error));
-  }, []);
+  }, [refresh]);
 
   const columns = [
     {
@@ -41,6 +45,7 @@ const AccountTable: React.FC = () => {
       title: 'State',
       dataIndex: 'state',
       key: 'state',
+      render: (state: string) => <StatusTag status={state}/>
     },
     {
       title: 'Created At',
@@ -51,6 +56,13 @@ const AccountTable: React.FC = () => {
       title: 'Modified At',
       dataIndex: 'modifiedAt',
       key: 'modifiedAt',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (record: User) => (
+          <DeleteAccount recordId={record.id}/>
+      ),
     },
   ];
 

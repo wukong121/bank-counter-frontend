@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import {PlusOutlined} from '@ant-design/icons';
 import {Button, Col, Drawer, Form, Input, Row, Select, Space, message} from 'antd';
+import {trigger} from "../store/refresh.slice";
+import {useDispatch} from "react-redux";
 
 const {Option} = Select;
 
@@ -16,6 +18,7 @@ interface AccountType {
 const NewAccount: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
 
   const handleSubmit = () => {
     form.submit();
@@ -55,6 +58,7 @@ const NewAccount: React.FC = () => {
       return response.json();
     })
     .then(data => {
+      dispatch(trigger());
       message.success('Account created successfully');
       console.log('Account created successfully:', data);
       onClose();
