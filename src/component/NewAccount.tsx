@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {PlusOutlined} from '@ant-design/icons';
 import {Button, Col, Drawer, Form, Input, Row, Select, Space, message} from 'antd';
-import {trigger} from "../store/refresh.slice";
+import {refreshAction} from "../store/refresh.slice";
 import {useDispatch} from "react-redux";
 
 const {Option} = Select;
@@ -58,7 +58,7 @@ const NewAccount: React.FC = () => {
       return response.json();
     })
     .then(data => {
-      dispatch(trigger());
+      dispatch(refreshAction.trigger());
       message.success('Account created successfully');
       console.log('Account created successfully:', data);
       onClose();

@@ -11,13 +11,10 @@ interface Transfer {
   transactionDate: string;
 }
 
-interface TransferTableParams {
-  id: number;
-}
-
-const TransferTable: React.FC<TransferTableParams> = ({id}) => {
+const TransferTable: React.FC = () => {
   const [transferData, settransferData] = useState<Transfer[]>([]);
   const refresh = useSelector((state: RootState) => state.refresh.value);
+  const id = useSelector((state: RootState) => state.transfer.accountId);
 
   useEffect(() => {
     fetch(`http://localhost:8080/api/v1/accounts/${id}/statements/mini`)

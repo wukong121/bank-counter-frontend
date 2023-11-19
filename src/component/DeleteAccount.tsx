@@ -2,7 +2,7 @@ import React from "react";
 import {Button, message, Modal} from "antd";
 import {ExclamationCircleFilled} from '@ant-design/icons';
 import {useDispatch} from "react-redux";
-import {trigger} from "../store/refresh.slice";
+import {refreshAction} from "../store/refresh.slice";
 
 const {confirm} = Modal;
 
@@ -28,7 +28,7 @@ const DeleteAccount: React.FC<DeleteAccountPrams> = ({recordId}) => {
           if (!response.ok) {
             throw new Error('Server error: ' + response.status);
           }
-          dispatch(trigger());
+          dispatch(refreshAction.trigger());
           message.success('Successfully deleting the account: ', recordId);
         })
         .catch((error) => console.error("Error deleting user data:", error));

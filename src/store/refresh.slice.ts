@@ -23,6 +23,6 @@ const slice = createSlice({
     }
 )
 
-export const {trigger} = slice.actions;
+export const refreshAction = slice.actions;
 
 export const refreshReducer = slice.reducer;

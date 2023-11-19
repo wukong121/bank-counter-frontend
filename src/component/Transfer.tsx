@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Button, Col, Form, Input, message, Row, Select} from 'antd';
 import FormItem from "antd/es/form/FormItem";
 import TransferTable from "./TransferTable";
 import {useDispatch} from "react-redux";
-import {trigger} from "../store/refresh.slice";
+import {refreshAction} from "../store/refresh.slice";
+import {transferAction} from "../store/transfer.slice";
 
 const {Option} = Select;
 
@@ -15,11 +16,10 @@ interface TransferType {
 }
 
 const Transfer: React.FC = () => {
-  const [accountId, setAccountId] = useState<number>(0);
   const dispatch = useDispatch();
   const onFinish = (values: TransferType) => {
     console.log(values)
-    setAccountId(values.accountId);
+    dispatch(transferAction.update(values.accountId));
     const requestData = {
       recipientAccountId: values.recipientAccountId,
       amount: values.amount,
@@ -41,7 +41,7 @@ const Transfer: React.FC = () => {
       return response.json();
     })
     .then(data => {
-      dispatch(trigger());
+      dispatch(refreshAction.trigger());
       message.success('The transfer was successful');
       console.log('Account created successfully:', data);
     })
@@ -99,7 +99,7 @@ const Transfer: React.FC = () => {
           </Form>
         </Col>
         <Col span={12}>
-          <TransferTable id={accountId}></TransferTable>
+          <TransferTable />
         </Col>
       </Row>
   );
